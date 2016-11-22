@@ -21,7 +21,7 @@ Telegram::Bot::Client.run(ARGV[0]) do |moar_jpeg|
                     else
                       90
                     end
-      Image.read("http://api.telegram.org/file/bot#{ARGV[0]}/#{moar_jpg.api.get_file(file_id: message.photo.last.file_id)["result"]["file_path"]}").write("#{message.photo.last.file_id}.jpg") { self.quality = 100 - compression }
+      Magick::Image::read("http://api.telegram.org/file/bot#{ARGV[0]}/#{moar_jpg.api.get_file(file_id: message.photo.last.file_id)["result"]["file_path"]}").write("#{message.photo.last.file_id}.jpg") { self.quality = 100 - compression }
       moar_jpeg.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new("#{message.photo.last.file_id}.jpg", "image/jpeg"))
     end
   end
