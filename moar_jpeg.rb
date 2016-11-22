@@ -20,7 +20,7 @@ Telegram::Bot::Client.run(ARGV[0]) do |moar_jpeg|
       compression = if message.caption.to_i.to_s == message.caption && message.caption.to_i.between?(1,100)
                       message.caption.to_i - 1
                     else
-                      90
+                      94
                     end
       Magick::Image.from_blob(open("https://api.telegram.org/file/bot#{ARGV[0]}/#{moar_jpeg.api.get_file(file_id: message.photo.last.file_id)["result"]["file_path"]}").read).first.write("#{message.photo.last.file_id}.jpg") { self.quality = 100 - compression }
       moar_jpeg.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new("#{message.photo.last.file_id}.jpg", "image/jpeg"))
