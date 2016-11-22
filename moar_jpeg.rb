@@ -5,16 +5,16 @@
 # No license applied
 
 # Loading the required gems...
-require 'telegram_bot'   # ... to make use of Telegram's bot API
-require 'rmagick'        # ... to communicate with imagemagick
+require 'telegram-bot-ruby'     # ... to make use of Telegram's bot API
+require 'rmagick'               # ... to communicate with imagemagick
 
 # Exiting the program if no argument is specified
 abort "please specify a telegram bot api token in argument." unless ARGV[0]
 
-# Create the bot instance with the token passed as an argument
-moar_jpeg = TelegramBot.new(token: ARGV[0])
-
-# Processing every message the bot recieves
-moar_jpeg.get_updates(fail_silently: true) do |message|
-  puts "got message: #{message.text}"
+# Listen to the messages
+Telegram::Bot::Client.run(token) do |moar_jpeg|
+  moar_jpeg.listen do |message|
+    puts "got message: #{message.text}"
+    moar_jpeg.api.send_message(chat_id: message.chat.id, text: "#{message.from.first_name}, I've got your message.")
+  end
 end
