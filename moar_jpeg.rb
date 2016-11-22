@@ -12,7 +12,7 @@ require 'rmagick'               # ... to communicate with imagemagick
 abort "please specify a telegram bot api token in argument." unless ARGV[0]
 
 # Listen to the messages
-Telegram::Bot::Client.run(token) do |moar_jpeg|
+Telegram::Bot::Client.run(ARGV[0]) do |moar_jpeg|
   moar_jpeg.listen do |message|
     puts "got message: #{message.text}"
     moar_jpeg.api.send_message(chat_id: message.chat.id, text: "#{message.from.first_name}, I've got your message.")
