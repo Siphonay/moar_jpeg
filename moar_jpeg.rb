@@ -5,8 +5,8 @@
 # No license applied
 
 # Loading the required gems...
-require 'telegram/bot'     # ... to make use of Telegram's bot API
-require 'rmagick'               # ... to communicate with imagemagick
+require 'telegram/bot'  # ... to make use of Telegram's bot API
+require 'rmagick'       # ... to communicate with imagemagick
 
 # Exiting the program if no argument is specified
 abort "please specify a telegram bot api token in argument." unless ARGV[0]
@@ -14,7 +14,17 @@ abort "please specify a telegram bot api token in argument." unless ARGV[0]
 # Listen to the messages
 Telegram::Bot::Client.run(ARGV[0]) do |moar_jpeg|
   moar_jpeg.listen do |message|
-    puts "got message: #{message.text}"
-    moar_jpeg.api.send_message(chat_id: message.chat.id, text: "#{message.from.first_name}, I've got your message.")
+    bot.api.send_message(chat_id: message.chat.id, text: "Hi, #{message.from.first_name}! Please send me your images as photos. Every other messages (text, files, stickers... will be ignored. Have fun!") if message.text == "/start"
+    if message.photo
+      compression = if message.caption.to_i.to_s == message_caption && message.caption.to_i.between?(1,100)
+                      message.caption.to_i
+                    else
+                      90
+                    end
+      Image.read("http://api.telegram.org/file/bot#{ARGV[0]}/#{moar_jpg.api.get_file(file_id: message.photo.last.file_id)["result"]["file_path"]}").write("#{message.photo.last.file_id}.jpg") { self.quality = 100 - compression }
+      moar_jpeg.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new("#{message.photo.last.file_id}.jpg", "image/jpeg"))
+    end
   end
 end
+
+abort "this should not have happened."
