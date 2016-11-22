@@ -7,6 +7,7 @@
 # Loading the required gems...
 require 'telegram/bot'  # ... to make use of Telegram's bot API
 require 'rmagick'       # ... to communicate with imagemagick
+require 'open-uri'
 
 # Exiting the program if no argument is specified
 abort "please specify a telegram bot api token in argument." unless ARGV[0]
@@ -21,7 +22,7 @@ Telegram::Bot::Client.run(ARGV[0]) do |moar_jpeg|
                     else
                       90
                     end
-      Magick::Image::read("http://api.telegram.org/file/bot#{ARGV[0]}/#{moar_jpeg.api.get_file(file_id: message.photo.last.file_id)["result"]["file_path"]}").write("#{message.photo.last.file_id}.jpg") { self.quality = 100 - compression }
+      Magick::Image.from_blob(open("http://api.telegram.org/file/bot#{ARGV[0]}/#{moar_jpeg.api.get_file(file_id: message.photo.last.file_id)["result"]["file_path"]}").read).first.write("#{message.photo.last.file_id}.jpg") { self.quality = 100 - compression }
       moar_jpeg.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new("#{message.photo.last.file_id}.jpg", "image/jpeg"))
     end
   end
