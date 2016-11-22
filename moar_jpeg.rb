@@ -5,7 +5,7 @@
 # No license applied
 
 # Loading the required gems...
-require 'telegram-bot-ruby'     # ... to make use of Telegram's bot API
+require 'telegram/bot'     # ... to make use of Telegram's bot API
 require 'rmagick'               # ... to communicate with imagemagick
 
 # Exiting the program if no argument is specified
