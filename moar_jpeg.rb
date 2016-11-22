@@ -18,7 +18,7 @@ Telegram::Bot::Client.run(ARGV[0]) do |moar_jpeg|
     moar_jpeg.api.send_message(chat_id: message.chat.id, text: "Hi, #{message.from.first_name}! Please send me your images as photos. Every other messages (text, files, stickers...) will be ignored. Have fun!") if message.text == "/start"
     if message.photo[0]
       compression = if message.caption.to_i.to_s == message.caption && message.caption.to_i.between?(1,100)
-                      message.caption.to_i
+                      message.caption.to_i - 1
                     else
                       90
                     end
