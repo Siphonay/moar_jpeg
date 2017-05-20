@@ -17,16 +17,21 @@ begin
   # Listen to the messages
   Telegram::Bot::Client.run(ARGV[0]) do |moar_jpeg|
     moar_jpeg.listen do |message|
-      moar_jpeg.api.send_message(chat_id: message.chat.id, text: "Hi, #{message.from.first_name}! Please send me your images as photos. Every other messages (text, files, stickers...) will be ignored. Have fun!") if message.text == "/start"                          # Display introduction text if the user starts the bot
-      if message.photo[0]                                                                                                                                                                                                                                                 # Reply if the message contains an image
+      if message.photo[0]                                                                                                                                                                                                                                                       # If the message contains an image :
         compression = if message.caption.to_i.to_s == message.caption && message.caption.to_i.between?(1,100)     # If compression is specified
                         message.caption.to_i - 1                                                                  # use it.
                       else                                                                                        # Else,
                         94                                                                                        # set the default rate.
                       end
-        Magick::Image.from_blob(open("https://api.telegram.org/file/bot#{ARGV[0]}/#{moar_jpeg.api.get_file(file_id: message.photo.last.file_id)["result"]["file_path"]}").read).first.write("#{message.photo.last.file_id}.jpg") { self.quality = 100 - compression }     # Download the sent image, compress it and save it
-        moar_jpeg.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new("#{message.photo.last.file_id}.jpg", "image/jpeg"))                                                                                                                               # Send the saved image
-        File.delete("#{message.photo.last.file_id}.jpg")                                                                                                                                                                                                                  # Delete the saved image
+        Magick::Image.from_blob(open("https://api.telegram.org/file/bot#{ARGV[0]}/#{moar_jpeg.api.get_file(file_id: message.photo.last.file_id)["result"]["file_path"]}").read).first.write("#{message.photo.last.file_id}.jpg") { self.quality = 100 - compression }   # Download the sent image, compress it and save it
+        moar_jpeg.api.send_photo(chat_id: message.chat.id, photo: Faraday::UploadIO.new("#{message.photo.last.file_id}.jpg", "image/jpeg"))                                                                                                                             # Send the saved image
+        File.delete("#{message.photo.last.file_id}.jpg")                                                                                                                                                                                                                # Delete the saved image
+      else                                                                                                                                                                                                                                                                      # Else,
+        moar_jpeg.api.send_message(chat_id: message.chat.id, text: if message.text == "/start"                                                                                                                                  # If the user is starting the bot,
+                                   "Hi, #{message.from.first_name}! Please send me your images as photos. You can also specify a number between 1 and 100 in its caption to select the conmpression level! (defaults at 94)"    # Tell him the instructions.
+                                  else                                                                                                                                                                                          # Else,
+                                    "Please include a photo in your message!"                                                                                                                                                   # Remind the user that the bot needs a photo.
+                                   end)
       end
     end
   end
